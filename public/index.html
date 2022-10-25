@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>zero_shot_nmt</title>
+</head>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<body>
+<div id="container">
+    <div id="loader" style="display: none">
+        <div id="loader_item"></div>
+    </div>
+    <div id="content">
+        <div style="display: grid">
+            <div class="item">
+                <h1 style="text-align: center">Zero-shot NMT</h1>
+            </div>
+            <div class="item">
+                <select id="models_selection">
+                    <option value=""> -- Select model --</option>
+                </select>
+            </div>
+            <div class="item">
+                <select id="lang_selection">
+                    <option value="[2en]">english</option>
+                    <option value="[2it]">italian</option>
+                    <option value="[2fr]">french</option>
+                    <option value="[2de]">deutsche</option>
+                    <option value="[2es]">spanish</option>
+                </select>
+            </div>
+            <div class="item">
+                <input type="text" id="sentence" class="form-text" style="text-align: center"
+                       placeholder="Sentence to translate..." maxlength="100"/>
+            </div>
+            <div class="item">
+                <button id="submit" class="btn btn-primary" type="button" onclick="translateSentence()">Translate
+                </button>
+            </div>
+            <div class="item">
+                <p style="text-align: center" id="translatedSentence"></p>
+            </div>
+        </div>
+    </div>
+</div>
+</ion-grid>
+<style>
+    #container {
+        display: grid;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .item {
+        margin: 8px;
+        display: flex;
+        justify-content: center;
+        width: 80vw;
+    }
+
+    #sentence {
+        width: 80vw;
+    }
+
+    #loader_item {
+        border: 6px solid #f3f3f3;
+        border-top: 6px solid #111111;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<script>
+    function setLoading(flag) {
+        const content = document.getElementById('content');
+        const loader = document.getElementById('loader');
+        content.style.display = !flag ? "block" : "none";
+        loader.style.display = flag ? "block" : "none";
+    }
+
+    async function searchModels() {
+        setLoading(true);
+        const res = await (await fetch('api/models')).json();
+        if (res.status) {
+            const selection = document.getElementById('models_selection');
+            for (const model of res.result) {
+                const option = document.createElement("option");
+                option.value = model
+                option.text = model;
+                selection.add(option);
+            }
+        }
+        setLoading(false);
+    }
+
+    async function translateSentence() {
+        setLoading(true);
+        const selection = document.getElementById('models_selection');
+        const model = selection.options[selection.selectedIndex].value;
+        const lang_selection = document.getElementById('lang_selection');
+        const lang = lang_selection.options[lang_selection.selectedIndex].value;
+        const selection_el = document.getElementById('sentence');
+        const sentence = `${lang} ${selection_el.value}`;
+        const res = await (await fetch(`api/translate?model=${model}&sentence=${sentence}`)).json();
+        const translatedSentence = document.getElementById('translatedSentence');
+        translatedSentence.textContent = res.status ? res.result : res.error;
+        setLoading(false);
+    }
+
+    searchModels();
+</script>
+</body>
+</html>
