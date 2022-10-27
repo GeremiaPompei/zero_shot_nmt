@@ -11,10 +11,6 @@ class Translator:
     ) -> None:
         device = 'cpu'
         model = torch.load(f'models/{model_name}', map_location=device)
-
-        import sys
-        sys.path.insert(0, './model')
-
         model = model.to(device)
         model.encoder.device = device
         model.decoder.device = device
