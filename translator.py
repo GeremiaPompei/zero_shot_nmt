@@ -1,5 +1,5 @@
 import torch
-from transformers import BertTokenizer
+from transformers import AutoTokenizer
 
 
 class Translator:
@@ -15,8 +15,19 @@ class Translator:
         model.encoder.device = device
         model.decoder.device = device
         self.model = model
-        self.tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-uncased")
+        self.tokenizer = self.__init_tokenizer__(model_name)
         self.max_length = max_length
+
+
+    def __init_tokenizer__(self, model_name):
+        tokenizer_type = "bert-base-multilingual-uncased"
+        if 'distilbert' in model_name.lower():
+            tokenizer_type = "distilbert-base-multilingual-cased"
+        elif 'xlmroberta' in model_name.lower():
+            tokenizer_type = "xlm-roberta-base"
+        elif 'mt5' in model_name.lower():
+            tokenizer_type = "google/mt5-small"
+        return AutoTokenizer.from_pretrained(tokenizer_type)
 
 
     def __call__(self, src_sentence: str) -> str:

@@ -1,11 +1,20 @@
 import os
 from translator import Translator
 from flask import Flask, request, send_from_directory, redirect, url_for
+import gdown
+import sys
+
+models_dir = 'models/'
+
+if not os.path.exists(models_dir) or len(os.listdir(models_dir)) == 0 or 'download' in sys.argv:
+    url = 'https://drive.google.com/drive/u/1/folders/1-4X-5stuETesyQA8kxgf-QvuH2VCHzaB'
+    gdown.download_folder(url)
 
 translators = {}
-for model_name in os.listdir('models/'):
-    print(f'loading: {model_name}')
-    translators[model_name] = Translator(model_name)
+for model_name in os.listdir(models_dir):
+    if model_name.endswith('.torch'):
+        print(f'loading: {model_name}')
+        translators[model_name] = Translator(model_name)
 
 app = Flask(__name__)
 
