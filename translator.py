@@ -1,5 +1,5 @@
 import torch
-from transformers import AutoTokenizer
+from transformers import BertTokenizer, XLMRobertaTokenizer, DistilBertTokenizer, MT5Tokenizer
 
 
 class Translator:
@@ -20,14 +20,15 @@ class Translator:
 
 
     def __init_tokenizer__(self, model_name):
-        tokenizer_type = "bert-base-multilingual-uncased"
         if 'distilbert' in model_name.lower():
-            tokenizer_type = "distilbert-base-multilingual-cased"
+            tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-multilingual-cased")
         elif 'xlmroberta' in model_name.lower():
-            tokenizer_type = "xlm-roberta-base"
+            tokenizer = XLMRobertaTokenizer.from_pretrained("xlm-roberta-base")
         elif 'mt5' in model_name.lower():
-            tokenizer_type = "google/mt5-small"
-        return AutoTokenizer.from_pretrained(tokenizer_type)
+            tokenizer = MT5Tokenizer.from_pretrained("google/mt5-small")
+        else:
+            tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-uncased")
+        return tokenizer
 
 
     def __call__(self, src_sentence: str) -> str:
