@@ -1,9 +1,9 @@
-from transformers import BertConfig, BertModel
+from transformers import XLMRobertaConfig, XLMRobertaModel
 
 from torch import nn
 
 
-class BERTEncoder(nn.Module):
+class XLMRobertaEncoder(nn.Module):
     def __init__(self,
                  tokenizer_dim,
                  hid_dim=768,
@@ -12,16 +12,16 @@ class BERTEncoder(nn.Module):
                  pf_dim=3072,
                  dropout=0.1,
                  device='cpu',
-                 type='bert-base-multilingual-uncased'
+                 type='xlm-roberta-base'
                  ):
         super().__init__()
-        config = BertConfig.from_pretrained(type)
+        config = XLMRobertaConfig.from_pretrained(type)
         config.hidden_size = hid_dim
         config.num_hidden_layers = n_layers
         config.num_attention_heads = n_heads
         config.intermediate_size = pf_dim
         config.hidden_dropout_prob = dropout
-        self.bert = BertModel(config).to(device)
+        self.bert = XLMRobertaModel(config).to(device)
         self.bert.resize_token_embeddings(tokenizer_dim)
         self.device = device
 
