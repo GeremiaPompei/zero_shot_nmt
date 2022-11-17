@@ -28,6 +28,7 @@ class Translator:
             tokenizer = MT5Tokenizer.from_pretrained("google/mt5-small")
         else:
             tokenizer = BertTokenizer.from_pretrained("bert-base-multilingual-uncased")
+        tokenizer.add_tokens([f"[2{lang}]" for lang in ["en", "it", "es", "de", "fr"]])
         return tokenizer
 
 
