@@ -1,6 +1,6 @@
 import os
-from translator import Translator
-from flask import Flask, request, send_from_directory, redirect, url_for
+from utils.translator import Translator
+from flask import Flask, request, send_from_directory, redirect
 import gdown
 import sys
 
